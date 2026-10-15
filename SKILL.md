@@ -1,127 +1,96 @@
 ---
 name: seo-geo-article-writer
-description: Create or deeply revise high-quality Persian or multilingual articles optimized for Search Intent, Semantic SEO, E-E-A-T, Local SEO when relevant, and GEO (AI answer engines). Use for new article generation, fixing underperforming published articles (high impressions low clicks), Rank Math setup, competitor gap analysis, or any content that must serve real users and AI systems. Triggers on article writing, content correction, SEO rewrite, GEO optimization, Rank Math, Search Console analysis, or when user provides existing post plus metrics.
+description: Write new SEO + GEO articles (Persian-first, multilingual capable) or deeply rewrite published articles that underperform. Use whenever the user wants an article, blog post, or service/landing-page copy that should rank on Google and be quoted by AI answer engines (ChatGPT, Gemini, AI Overviews, Perplexity), or shares an existing URL/post with Search Console data (impressions, clicks, CTR, position) to fix. Also trigger for Rank Math setup (focus keyword, title, meta, schema, slug), schema/JSON-LD for articles, search-intent or competitor-gap analysis, title/meta rewrites for low CTR, and Persian requests such as "مقاله بنویس"، "سئو"، "اصلاح مقاله"، "ایمپرشن بالا کلیک کم"، "رنک مت". Use it even if the user never says "SEO" but wants content that must perform in search.
 ---
 
 # SEO + GEO Article Writer & Corrector
 
-Produce accurate, trustworthy, human, citable content that ranks in Google and is extractable by AI answer engines (ChatGPT, Gemini, AI Overviews, Perplexity, etc.). Never write only for Rank Math green scores or word-count targets.
+The goal is content that is accurate, human, and citable: it answers the searcher fast, ranks in Google, and is easy for AI answer engines to quote. Rank Math green scores and word counts are side effects, never the target; chasing them produces padded, robotic text that readers and AI systems both discount.
 
-## Modes
+Keep one fact in mind throughout: Google's own guidance (May 2026) says optimizing for AI features "is still SEO". There is no special markup, file, or chunking trick that Google asks for. So the work is: original useful content, clean structure, crawlable and indexable pages, honest sourcing. Other engines (ChatGPT, Perplexity, Gemini) may weigh signals differently and no one outside them knows exactly how, so never promise citations. Details and the evidence status of each tactic: `references/geo-guide.md`.
 
-### Mode A — New Article
-Full research → structure → write → multi-role review → Rank Math package.
+## Pick the mode
 
-### Mode B — Correct / Upgrade Existing Article
-Required inputs: current URL or full HTML/text, Search Console data (queries, impressions, clicks, CTR, position), current Rank Math or title/meta if available.
-Focus on: title/H1/meta mismatch with intent, weak direct answers, missing entities, poor CTR signals, thin coverage of high-impression queries, artificial tone, missing local/CTA elements when relevant.
+- **Mode A, new article.** Input: a topic (plus optional business context).
+- **Mode B, correct an existing article.** Input: URL or full text, ideally with Search Console data (queries, impressions, clicks, CTR, position) and the current title/meta.
+- **Mode B-lite, title/meta/H1 only.** When the user only wants a CTR fix, skip the full rewrite: diagnose, give 3 title/meta options, and say what else would be worth changing.
+- **Mode C, audit only.** The user wants a verdict or priority list without a rewrite.
 
-## Core Roles (activate all simultaneously)
+Other requests inside the skill's scope: if the user asks for `llms.txt` or other AI-specific files, do not build them by default. Say they are harmless but unproven (Google ignores them) and produce a minimal one only if the user still wants it.
 
-1. Domain researcher (adapt expertise to the topic — automotive, medical, legal, finance, home services, software, etc.)
-2. Practical expert / diagnostician
-3. SEO + Semantic SEO specialist
-4. Local SEO specialist (only when business is location-based service)
-5. GEO / Generative Engine Optimization specialist
-6. Search Intent & user-behavior analyst
-7. Natural human language editor (native-quality Persian preferred when content is Persian)
-8. Search Console analyst
-9. Content strategist for the business type
-10. Structure specialist for search engines and AI answer systems
+If the user gives a URL, fetch it with WebFetch. If they attach a Search Console export, run `<skill folder>/scripts/analyze_gsc.py` on it instead of eyeballing rows (see `references/search-console-analysis.md`). If inputs are missing, proceed with what exists and state what the diagnosis could not cover; ask only if the topic itself is unclear. If the user demands a guarantee (of rankings, of AI citations), decline the guarantee in two sentences, say what you can do instead, and carry on with the task.
 
-## Non-Negotiable Principles
+## Workflow
 
-1. **Research first.** Never write before mapping Intent, entities, real user language, competitor gaps, and reliable sources.
-2. **Sources hierarchy.** Official docs → manufacturer/standards bodies → peer-reviewed or highly reputable technical sources → expert sites → forums only as supporting signal. Never invent codes, prices, times, or technical facts.
-3. **Distinguish clearly:** official fact vs. workshop experience vs. probable cause vs. confirmed cause vs. user reports.
-4. **Direct answer first.** Every important section starts with a short, standalone answer that an AI can extract without reading the whole page.
-5. **Human voice.** Varied sentence length, natural Persian (or target language), real terminology used by practitioners and customers. No AI clichés, no “در این مقاله قصد داریم…”, no exaggerated claims about the business.
-6. **E-E-A-T.** Show experience only with real data provided by the user. Mark uncertainty. Explain limits of remote diagnosis when relevant.
-7. **Semantic coverage.** Cover the entity graph and related concepts that matter; never keyword-stuff.
-8. **Safety first.** On any topic involving risk (vehicles, health, electricity, structural, legal, financial), state dangers clearly and refuse oversimplified dangerous instructions.
-9. **CTA natural.** Only after value is delivered. Match Intent. Never spam every H2.
-10. **Anti-AI self-check.** Before delivery, remove repetitive patterns, formal robotic tone, empty padding, and fabricated experience.
+### 1. Intake (30 seconds, silently)
+Identify: language and dialect, topic or existing article, business context (name, site, location, services, contact channels), real experience notes the business supplied, related internal pages, existing brand/tone rules. Whatever the user did not supply stays unknown; never fill it with invention.
 
-## Workflow (both modes)
+### 2. Research before writing
+Use WebSearch/WebFetch; do not write from memory alone. Establish:
+- Primary and secondary search intent, funnel stage
+- Real user questions and the exact phrases people type (including Latin-script terms seen on screens, labels, error messages)
+- Key entities and related concepts
+- Competitor gaps: what top-ranking pages miss in depth, answers, structure, CTA, and what they get wrong. Some sites refuse automated fetching (robots or legal blocks). Do not route around a refusal with mirrors or caches; build the gap analysis from what the search results show (titles, snippets, visible headings, People-also-ask style questions) and say in the report that those pages were not read in full.
+- Sources, in this order: official docs and standards bodies → manufacturers / peer-reviewed or highly reputable technical sources → expert sites → forums only as a weak supporting signal
 
-### 1. Input Analysis
-- Topic / existing article
-- Business context (optional but powerful): name, site, location, services, contact channels, real workshop/clinic data
-- Search Console export or key queries (critical for Mode B)
-- Related internal pages
-- Real experience notes from the business (never invent)
+If only foreign-language or other-market sources can be opened (for example a Persian-language topic where the best primary sources are English manuals), use them, say which market or model they cover, and do not generalize beyond it. Persian-first applies to the writing, not to the evidence.
 
-### 2. Pre-Writing Research Block (always output this first)
-- Primary & secondary Search Intent
-- User stage in funnel
-- Real questions & problems
-- Keyword / phrase cluster (Persian + English terms users actually type or see on screens)
-- Key entities
-- Competitor gaps (structure, depth, missing answers, weak CTAs)
-- High-value sources
-- For Mode B: diagnosis of why impressions high / clicks low (title, meta, H1, intent mismatch, thin sections, etc.)
+Never invent codes, prices, durations, statistics, or technical facts. Label every claim by what it is: official fact, practitioner experience, probable cause, confirmed cause, user report. Experience claims ("in our workshop we always see…") are allowed only if the user supplied them. Source rules and YMYL handling: `references/eeat-and-sources.md`.
 
-### 3. Structure Design
-One H1 only. Logical H2/H3 that answer real questions. Prefer problem → meaning → symptoms → probable causes → diagnostic steps → solution → when to seek professional help.
+For Mode B, diagnose first (`references/correction-patterns.md`).
 
-### 4. Writing Rules
-- Introduction: 1–3 paragraphs that immediately name the problem and promise concrete answers. No generic openings.
-- Every major section: short direct answer → explanation → practical next steps.
-- Use tables when comparison or quick lookup helps the user.
-- FAQ only for questions that add new value (not H2 repeats).
-- Internal links with natural anchors to existing relevant pages.
-- External links only to high-authority sources.
-- Images: describe realistic needed images + natural ALT text. Never claim AI images are real workshop photos.
+### 3. Design the structure
+One H1. H2/H3 are the real questions users ask. For problem/fault/service topics the default flow is meaning → symptoms → probable causes → how to diagnose → solutions → when to see a professional → cost factors → FAQ; adapt for informational, comparison, and how-to intent (`references/checklists.md`). Do not change a working URL without strong reason.
 
-### 5. Local / Business Layer (when applicable)
-Weave location and contact naturally in CTA and service sections only. Do not force city name into every paragraph. Prefer real address, map link, phone, WhatsApp, Telegram when provided.
+### 4. Write
+- Open with 1–3 paragraphs that name the problem and promise concrete answers. No generic openers.
+- Start each important section with a short standalone answer (1–3 sentences) that still makes sense when quoted alone, then explain, then give next steps. This helps hurried readers, featured snippets, and AI quoting alike; it is not a trick, so do not cut real depth to achieve it.
+- Add something no competitor page has: original comparison, a decision table, a diagnostic order, a real number the user supplied, a correction of a common myth. Google calls generic recycled content "commodity", and it is what AI systems can already produce, so it earns nothing.
+- Voice: natural, varied sentence length, the terms practitioners and customers really use. For Persian, follow `references/persian-writing.md` (typography, ZWNJ, tone, banned clichés).
+- Cover related entities naturally; no keyword stuffing.
+- On topics with risk (vehicles, health, electricity, structure, legal, finance), state dangers plainly and mark the limits of remote diagnosis. Do not give oversimplified dangerous instructions.
+- CTA only after value is delivered, matched to intent, never on every H2. For local businesses weave location and contact (only channels the user gave) into CTA and service sections, not every paragraph. With no contact details supplied, write a short generic CTA («برای بررسی دقیق با تعمیرگاه تماس بگیرید») and list the missing contact details under "needs your confirmation"; never invent a phone number, address, years of experience, or service list.
+- Links: internal links use only URLs the user gave or that you verified on their site, with natural anchors; external links go only to high-authority sources. If you have none, leave links out of the HTML and give suggested internal-link targets and anchors in the report; the linter's "no internal links" warning is then expected.
+- Images: propose realistic images with natural ALT text. Never present AI-generated images as real photos of the business or its work.
+- FAQ: only questions that add new value, each answer independent, never a rewording of an H2. FAQ is for readers; it no longer produces a Google rich result (see schema below).
 
-### 6. Multi-Stage Self-Review (mandatory before final output)
-1. As the end user: Did I get my answer fast?
-2. As the domain expert: Any technical error or dangerous simplification?
-3. As SEO specialist: Intent coverage, headings, entities, links, title/meta?
-4. As AI answer engine: Can each section stand alone as a clean extractable answer?
+### 5. Check before delivering
+Save the article HTML and run `python <skill folder>/scripts/lint_article.py article.html --focus "<focus keyword>" [--title ... --meta ...]` (use the absolute path of this skill's folder; the working directory is usually not the skill folder). Fix real findings; the linter's heuristics (keyword density, paragraph length) are prompts to look, not laws. Then read the draft as four readers:
+1. The user: did I get my answer on the first screen?
+2. The domain expert: any wrong or dangerously simplified claim?
+3. The SEO: intent coverage, headings, entities, links, title/meta?
+4. The AI engine: can each section stand alone as a clean 1–3 sentence answer?
 
-### 7. Final Output Format (always use this order)
+For high-stakes pages, have an independent agent that has not seen the drafting fact-check the claims against the sources. High-stakes means medical, legal, financial, and safety-critical vehicle or electrical topics (brakes, airbags, steering, fuel, battery/high voltage). If you cannot spawn an agent, do a separate verification pass against the opened sources and write in the final check that it was not independent.
 
-#### بخش ۱ — تحلیل قبل از نگارش / تشخیص مقاله موجود
-(Intent, audience, keyword cluster, entities, competitor gaps, Search Console diagnosis if Mode B, sources)
+**Placeholders and gaps.** The HTML must be publishable as it stands: where a fact is missing, omit the sentence or write the safe general version, and list what needs confirming in the report. The only exception is a contact or author field the user must fill in; mark it `[TO CONFIRM: …]` so the linter blocks publishing until it is resolved.
 
-#### بخش ۲ — ساختار پیشنهادی
-H1 + H2/H3 tree
+## Schema: what to recommend now
+Recommend `Article` or `BlogPosting` (with real author, dates, image) plus `BreadcrumbList`, and `LocalBusiness`/`Organization` where true. Do not promise FAQ or HowTo rich results: Google dropped HowTo in 2023 and removed FAQ rich results entirely in May 2026. FAQPage markup is still valid schema.org and harmless if it matches visible content, but present it as optional. Templates and the dated timeline: `references/schema-guide.md`.
 
-#### بخش ۳ — مقاله کامل
-Clean HTML-ready content (`<h1>`, `<h2>`, `<h3>`, `<p>`, lists, tables, `<strong>`). Ready for WordPress.
+## Deliverable
+Write the final text in the user's language (Persian by default if they write Persian). Use the order in `references/output-format.md` (analysis → structure → article → CTAs → FAQ → Rank Math package → images → final check). Keep the analysis proportional to the task; a tight one beats a long generic one.
 
-#### بخش ۴ — CTAهای دقیق
-Exact copy + placement suggestions
+Deliver the article as a file the user can open: clean WordPress-ready HTML (`<h1>`, `<h2>`, `<h3>`, `<p>`, lists, tables, `<strong>`), saved as `.html` and sent with SendUserFile (or as a document if the session offers a Docs type; if nothing can send files, leave it in the working directory and state the path). The article's FAQ lives inside the HTML; section 5 of the report need not copy it, only note the schema decision. Put the research summary, CTAs, Rank Math package, and final check in the chat reply or a second file so the HTML can be pasted without editing.
 
-#### بخش ۵ — FAQ
-Question + short independent answer (Schema-ready)
+## Hard bans
+Keyword stuffing, padding for length, fabricated experience/prices/codes/claims/statistics, clickbait titles, copying competitors, artificial FAQ, fake bylines or invented author credentials, sacrificing user value for a Rank Math score, changing a working URL without strong reason, mass-producing near-duplicate pages (Google treats this as scaled content abuse).
 
-#### بخش ۶ — بسته Rank Math / SEO
-Focus Keyword, Secondary Keywords, SEO Title, Meta Description, URL Slug, Schema type, Canonical, Social Title/Description, Image ALTs, Internal & External links list
+## Domain adaptation
+The skill is topic-agnostic. Swap in the right entities, terminology, safety rules, and source hierarchy for the domain (automotive, medical, legal, finance, home services, software, and so on) while keeping the same structure and quality rules.
 
-#### بخش ۷ — تصاویر پیشنهادی
-Type, placement, subject, generation prompt (if needed), ALT, caption
+## References (read when needed)
+- `references/output-format.md`: deliverable order and contents
+- `references/geo-guide.md`: what is and is not evidence-based for AI answer engines; measuring AI visibility
+- `references/schema-guide.md`: schema types worth adding, JSON-LD templates, deprecation timeline
+- `references/eeat-and-sources.md`: Who/How/Why, AI disclosure, source hierarchy, claim labels, YMYL
+- `references/persian-writing.md`: Persian typography, ZWNJ, digits, tone, cliché list
+- `references/search-console-analysis.md`: reading a Search Console export, query-to-section mapping
+- `references/correction-patterns.md`: Mode B diagnosis patterns and extra output section
+- `references/rank-math-templates.md`: Rank Math fields, title/meta formulas, length guidance
+- `references/checklists.md`: research, quality, structure, and final-delivery checklists
+- `references/examples.md`: before/after examples (direct answer, title/meta, tone)
 
-#### بخش ۸ — کنترل نهایی
-Issues found → fixes applied → intentionally omitted items + reason → residual SEO risks → future expansion ideas
-
-## Hard Bans
-- Keyword stuffing
-- Padding for word count
-- Fabricated experience, prices, codes, or technical claims
-- Clickbait titles
-- Copying competitors
-- Artificial FAQ
-- Forcing Rank Math score over user value
-- Changing a working URL without strong reason
-
-## Domain Adaptation
-When the topic is not automotive, replace vehicle-specific examples with the correct domain entities, safety rules, and terminology while keeping the same structural and quality rules.
-
-## References
-- Detailed checklists and templates: `references/checklists.md`
-- Rank Math & Schema examples: `references/rank-math-templates.md`
-- Mode B diagnostic patterns: `references/correction-patterns.md`
+## Scripts
+- `scripts/analyze_gsc.py`: turn a Search Console CSV export into ranked opportunities (stdlib only)
+- `scripts/lint_article.py`: structural and Persian-typography checks on article HTML (stdlib only)

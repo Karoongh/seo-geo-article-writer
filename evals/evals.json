@@ -1,0 +1,68 @@
+{
+  "skill_name": "seo-geo-article-writer",
+  "note": "Prompts for checking the skill by hand or with the skill-creator workflow. Subjects are generic; do not treat any number in a prompt as fact.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-article-fault-code",
+      "prompt": "یه مقاله سئو شده بنویس درباره چراغ ای‌بی‌اس روشن شد. سایت ما تعمیرگاه خودروهای ایرانی توی شیراز هست. تجربه یا آمار خاصی ندارم که بدم.",
+      "expected_output": "Mode A. Research block first; H1 + H2 tree following problem→causes→diagnosis→when to stop; standalone answers under headings; no invented prices/stats/experience; safety branch stated; CTA after value with only user-supplied contact; HTML file delivered; linter run; Rank Math package; schema = Article + BreadcrumbList (+LocalBusiness), FAQ markup described as optional with no rich result.",
+      "checks": [
+        "No claim like 'in our workshop we always see' appears",
+        "No price range or statistic without a source",
+        "Exactly one H1; file delivered as .html",
+        "Final check lists items needing the owner's confirmation",
+        "Does not promise FAQ/HowTo rich results"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ctr-fix-with-gsc-export",
+      "prompt": "این مقاله ایمپرشن بالایی داره ولی کلیک نداره. خروجی سرچ کنسول (کوئری‌ها) و لینک مقاله رو دادم. فقط عنوان و متا رو درست کن، بقیه رو دست نزن.",
+      "files": ["a Search Console queries CSV (attach)"],
+      "expected_output": "Mode B-lite. analyze_gsc.py run on the CSV; diagnosis of which queries underperform vs the file's own baseline; 3 title and 3 meta options in query wording; H1/URL left unchanged; note to verify the live SERP and re-measure after 3-4 weeks; no full rewrite.",
+      "checks": [
+        "Script output used rather than eyeballed numbers",
+        "URL and body untouched, stated explicitly",
+        "Options are natural, no clickbait, lengths within rule of thumb",
+        "States what the data cannot show"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "geo-promise-pushback",
+      "prompt": "می‌خوام مقاله‌م حتماً توی جواب‌های چت‌جی‌پی‌تی و AI Overview بیاد. FAQ schema و llms.txt هم بزن که تضمینی بشه.",
+      "expected_output": "Does not promise citations. Explains that Google says AI features are still SEO, no special schema or llms.txt needed, FAQ rich results removed May 2026; other engines undocumented. Offers what does help (original content, standalone answers, crawlability, sourcing) and how to measure. Still helps with the article.",
+      "checks": [
+        "No guarantee language",
+        "Correct statement of FAQ/HowTo status",
+        "Says other engines' behaviour is not documented/verified",
+        "Still delivers concrete next steps"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "rewrite-ai-sounding-post",
+      "prompt": "این مقاله رو از وردپرس کپی کردم. خیلی رباتیکه و می‌گن «در دنیای امروز» زیاد داره. بازنویسیش کن ولی آدرس و ساختار اصلی رو نگه دار.",
+      "files": ["pasted article text or HTML"],
+      "expected_output": "Mode B. Intro rewritten problem-first; clichés removed; existing URL/structure preserved; standalone answers added; any 'we always...' claim flagged or removed unless supplied; linter before/after; Persian typography fixed.",
+      "checks": [
+        "Linter errors fixed (ي/ك, ZWNJ, generic openers)",
+        "Structure and URL preserved as requested",
+        "Lists what was changed and what was deliberately left"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "non-automotive-ymyl",
+      "prompt": "Write an SEO article in English for a dental clinic site: 'does a loose crown need an emergency visit?'",
+      "expected_output": "Mode A in English. Safety-first answer, red-flag symptoms, honest limits of remote advice, no dosing or DIY procedures beyond safe interim care from reputable sources, reviewer placeholder [TO CONFIRM], sources from dental associations/health authorities, no invented clinic data, no fake credentials.",
+      "checks": [
+        "Reviewer/author left as [TO CONFIRM], not invented",
+        "Sources are reputable and opened",
+        "Urgent red flags appear before general advice",
+        "No invented prices or success rates"
+      ]
+    }
+  ]
+}
